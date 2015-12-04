@@ -1,0 +1,15 @@
+{
+  "name": "Weathers",
+  "version": "1.0.0",
+  "homepage": "https://github.com/xxllxhdj/WeatherV2",
+  "authors": [
+    "xuxl <xuxle@yonyou.com>"
+  ],
+  "main": "app.js",
+  "license": "ISC",
+  "devDependencies": {
+    "ionic": "~1.1.1",
+    "ng-debounce": "~0.1.7",
+    "ngCordova": "~0.1.23-alpha"
+  }
+}
