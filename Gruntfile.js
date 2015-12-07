@@ -274,7 +274,7 @@ module.exports = function (grunt) {
         'uglify',
         //'imagemin',
         'copy:release',
-        'filerev',
+        //'filerev',
         'usemin'
     ]);
 
