@@ -28,24 +28,12 @@ module.exports = function (grunt) {
                 files: ['bower.json'],
                 tasks: ['wiredep']
             },
+            gruntfile: {
+                files: ['Gruntfile.js']
+            },
             scripts: {
                 files: ['<%= config.app %>/<%= config.scripts %>/{,*/}*.js'],
-                tasks: ['copy:scripts']
-            },
-            styles: {
-                files: ['<%= config.app %>/{,*/}*.css'],
-                tasks: ['copy:styles']
-            },
-            images: {
-                files: [ '<%= config.app %>/<%= config.images %>/{,*/}*'],
-                tasks: ['copy:images']
-            },
-            htmls: {
-                files: [
-                    '<%= config.app %>/{,*/}*.html',
-                    '<%= config.app %>/tpls/{,*/}*.html'
-                ],
-                tasks: ['copy:htmls']
+                tasks: ['jshint']
             }
         },
 
@@ -60,18 +48,25 @@ module.exports = function (grunt) {
             livereload: {
                 options: {
                     files: [
-                        '<%= config.dist %>/{,*/}*.html',
-                        '<%= config.dist %>/{,*/}*.css',
-                        '<%= config.dist %>/img/{,*/}*',
-                        '<%= config.dist %>/js/{,*/}*.js'
+                        '<%= config.app %>/{,*/}*.html',
+                        '<%= config.app %>/{,*/}*.css',
+                        '<%= config.app %>/img/{,*/}*',
+                        '<%= config.app %>/js/{,*/}*.js'
                     ],
                     port: 9006,
                     server: {
-                        baseDir: ['<%= config.dist %>'],
+                        baseDir: ['<%= config.app %>'],
                         routes: {
                             '/bower_components': './bower_components'
                         }
                     }
+                }
+            },
+            release: {
+                options: {
+                    background: false,
+                    port: 9008,
+                    server: '<%= config.dist %>'
                 }
             }
         },
@@ -102,37 +97,6 @@ module.exports = function (grunt) {
 
         // Copies remaining files to places other tasks can use
         copy: {
-            scripts: {
-                expand: true,
-                dot: true,
-                cwd: '<%= config.app %>',
-                dest: '<%= config.dist %>',
-                src: ['<%= config.scripts %>/**/*.js']
-            },
-            styles: {
-                expand: true,
-                dot: true,
-                cwd: '<%= config.app %>',
-                dest: '<%= config.dist %>',
-                src: ['<%= config.styles %>/*']
-            },
-            images: {
-                expand: true,
-                dot: true,
-                cwd: '<%= config.app %>',
-                dest: '<%= config.dist %>',
-                src: ['<%= config.images %>/**/*.{png,jpg,jpeg,gif,webp,svg}']
-            },
-            htmls: {
-                expand: true,
-                dot: true,
-                cwd: '<%= config.app %>',
-                dest: '<%= config.dist %>',
-                src: [
-                    'index.html',
-                    'tpls/**/*.html'
-                ]
-            },
             data: {
                 expand: true,
                 dot: true,
@@ -250,17 +214,6 @@ module.exports = function (grunt) {
         },
     });
 
-    grunt.registerTask('debug', [
-        'clean',
-        'wiredep',
-        'jshint',
-        'copy:scripts',
-        'copy:styles',
-        'copy:images',
-        'copy:htmls',
-        'copy:data'
-    ]);
-
     grunt.registerTask('release', [
         'clean',
         'wiredep', 
@@ -280,15 +233,13 @@ module.exports = function (grunt) {
 
     grunt.registerTask('serve', 'start the server and preview your app', function (target) {
         if (target === 'release') {
-            grunt.task.run([
-                'release'
-            ]);
-        } else {
-            grunt.task.run([
-                'debug'
-            ]);
+            return grunt.task.run(['release', 'browserSync:release']);
         }
+
         grunt.task.run([
+            'clean',
+            'wiredep',
+            'jshint',
             'browserSync:livereload',
             'watch'
         ]);
